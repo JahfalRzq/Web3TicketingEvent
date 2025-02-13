@@ -2,11 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract EventTicket is Ownable {
-    using SafeERC20 for IERC20;
-
     struct Ticket {
         uint256 id;
         string eventName;
