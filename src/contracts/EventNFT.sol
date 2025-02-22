@@ -34,3 +34,4 @@ contract EventNFT is ERC721, Ownable {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         return _tokenURIs[tokenId];
     }
+}
