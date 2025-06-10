@@ -62,12 +62,8 @@ export const createUser = async (req : Request, res: Response) =>{
         NewUser.userName = body.userName
         NewUser.password = encrypt(body.password); // Menggunakan fungsi encrypt  
         NewUser.role = body.role
-        NewUser.noTelp = body.noTelp
 
-        if (req.file) {  
-            NewUser.eTTD = req.file.path; // Menyimpan path file  
-        }  
-        
+
         await userRepository.save(NewUser)
 
         console.log(NewUser)
@@ -114,11 +110,7 @@ export const updateUser = async (req : Request, res: Response) =>{
         updateUser.userName = body.userName
         updateUser.password = encrypt(body.password);
         updateUser.role = body.role
-        updateUser.noTelp = body.noTelp
 
-        if (req.file) {  
-            updateUser.eTTD = req.file.path; // Update eTTD if a new file is uploaded  
-        }  
   
         await userRepository.save(updateUser)
 
@@ -213,7 +205,6 @@ export const getUserById =  async (req : Request, res : Response) =>{
         } 
 
 
-        user.eTTD = user.eTTD ? `${user.eTTD.replace(/\\/g, '/')}` : null; // Ganti dengan domain Anda  
 
 
 
