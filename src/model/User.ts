@@ -1,6 +1,8 @@
 import { IsString,IsUppercase } from "class-validator";
 import { Entity,PrimaryGeneratedColumn,Column,CreateDateColumn,UpdateDateColumn,DeleteDateColumn, OneToMany } from "typeorm";
 import bcrypt from 'bcryptjs';
+import { Event } from "./Event";
+import { Ticket } from "./Ticket";
 
 
 export enum UserRole {
@@ -24,6 +26,12 @@ export class User{
     @IsString()
     public namaLengkap: string
 
+    @Column({
+        default : null,
+        nullable : true
+    })
+    @IsString()
+    public walletAddress
 
     @Column({
         default: null,
@@ -48,19 +56,6 @@ export class User{
     @IsUppercase()
     public role: UserRole
 
-    @Column({
-        default: null,
-        nullable: true
-    })
-    @IsString()
-    public eTTD: string
-
-    @Column({
-        default: null,
-        nullable: true
-    })
-    @IsString()
-    public noTelp: string
     
 
     @CreateDateColumn()
@@ -80,4 +75,10 @@ export class User{
     public checkIfPasswordMatch(unencryptedPassword: string): boolean {
         return bcrypt.compareSync(unencryptedPassword, this.password)
     }
+
+    @OneToMany(() => Event, (events) => events.userOrganizer)
+    public events : Event[]
+
+    @OneToMany (() => Ticket, (users) => users.owner_id)
+    public users : Ticket[]
 }
