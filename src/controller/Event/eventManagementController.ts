@@ -56,16 +56,9 @@ export const createEvent = async (req : Request, res: Response) =>{
 
         const newEvent = new Event()
         newEvent.nameEvent = body.nameEvent
-        newEvent.dateEvent = body.dateEvent
         newEvent.alamatEvent = body.alamatEvent
         newEvent.typeEvent = body.typeEvent
         newEvent.categoryEvent = body.categoryEvent
-
-
-        if (req.file) {  
-            newEvent.image = req.file.path; // Menyimpan path file  
-        }  
-        
         await userRepository.save(newEvent)
 
         console.log(newEvent)
