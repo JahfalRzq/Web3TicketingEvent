@@ -1,5 +1,7 @@
-import { IsDate, IsString,IsUppercase } from "class-validator";
-import { Entity,PrimaryGeneratedColumn,Column,CreateDateColumn,UpdateDateColumn,DeleteDateColumn, OneToMany, Collection } from "typeorm";
+import { IsDate, IsDecimal, IsInt, IsString,IsUppercase } from "class-validator";
+import { Entity,PrimaryGeneratedColumn,Column,CreateDateColumn,UpdateDateColumn,DeleteDateColumn, OneToMany, Collection,Int32, Decimal128, ManyToOne, JoinColumn } from "typeorm";
+import { User } from "./User";
+import { Ticket } from "./Ticket";
 
 
 export enum categoryEvent {
@@ -35,7 +37,14 @@ export class Event{
     nullable : true
     })
     @IsDate()
-    public dateEvent : Date
+    public startDate : Date
+
+    @Column({
+    default : null,
+    nullable : true
+    })
+    @IsDate()
+    public endDate : Date
 
     @Column({
     default : null,
@@ -43,13 +52,6 @@ export class Event{
     })
     @IsString()
     public alamatEvent : String
-
-    @Column({
-        default : null,
-        nullable : true
-    })
-    @IsString()
-    public image : string
 
     @Column({
         type: 'enum',
@@ -68,6 +70,36 @@ export class Event{
     public typeEvent: typeEvent
 
 
+    @Column({
+    default : null,
+    nullable : true
+    })
+    @IsInt()
+    public totalTicket : Int32
+
+    @Column({
+    default : null,
+    nullable : true
+    })
+    @IsDecimal()
+    public ticketPrice : Decimal128
+
+    
+    @Column({
+        nullable : false
+    })
+    @IsString()
+    public contract_address : string
+
+        
+    @Column({
+        nullable : false
+    })
+    @IsString()
+    public metadata_uri : string
+
+
+
     @CreateDateColumn()
     public createdAt: Date
 
@@ -76,6 +108,14 @@ export class Event{
 
     @DeleteDateColumn()
     public deletedAt: Date
+
+    @ManyToOne (() => User, (userOrganizer) => userOrganizer.events)
+    @JoinColumn()
+    public userOrganizer : User
+
+    @OneToMany(() => Ticket, (tickets) => tickets.event_id)
+    public tickets : Ticket[]
+
     
     
     }
