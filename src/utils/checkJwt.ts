@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '../types/JwtPayload'
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
-import { User } from '../model/User'
+import { User } from '../database/mysql/entities/User'
 import { AppDataSource } from "../data-source";
 
 
