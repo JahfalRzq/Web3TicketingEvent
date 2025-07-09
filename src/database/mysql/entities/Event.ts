@@ -1,4 +1,4 @@
-import { IsDate, IsDecimal, IsInt, IsString,IsUppercase } from "class-validator";
+import { IsDate, IsDecimal, IsInt, IsNumber, IsString,IsUppercase } from "class-validator";
 import { Entity,PrimaryGeneratedColumn,Column,CreateDateColumn,UpdateDateColumn,DeleteDateColumn, OneToMany, Collection,Int32, Decimal128, ManyToOne, JoinColumn } from "typeorm";
 import { User } from "./User";
 import { Ticket } from "./Ticket";
@@ -72,17 +72,18 @@ export class Event{
 
     @Column({
     default : null,
-    nullable : true
+    nullable : true,
+    type: 'int', // atau 'integer'
     })
-    @IsInt()
-    public totalTicket : Int32
+    @IsNumber()
+    public totalTicket : number
 
     @Column({
     default : null,
-    nullable : true
+    nullable : true,
     })
     @IsDecimal()
-    public ticketPrice : Decimal128
+    public ticketPrice : Float64Array
 
     
     @Column({
