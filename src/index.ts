@@ -5,9 +5,11 @@ import * as bodyParser from "body-parser"
 import { AppDataSource } from "./data-source"
 import router from "./routes/index"
 import path = require("path")
+import { connectMongo } from './database/mongodb/connect';
+
 
 AppDataSource.initialize().then(async () => {
-
+    await connectMongo(); // <== Tambahkan ini
     const app = express()
     app.use(cors({
         credentials: true,
