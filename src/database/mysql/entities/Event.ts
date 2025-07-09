@@ -83,7 +83,7 @@ export class Event{
     nullable : true,
     })
     @IsDecimal()
-    public ticketPrice : Float64Array
+    public ticketPrice : number
 
     
     @Column({
