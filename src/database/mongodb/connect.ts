@@ -1,11 +1,17 @@
+// src/database/mongodb.ts
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-export const connectMongoDB = async () => {
+dotenv.config();
+
+export const connectMongo = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/web3ticketing');
-    console.log('✅ MongoDB connected successfully');
+    await mongoose.connect(process.env.MONGODB_URI || '', {
+      dbName: 'web3ticketing',
+    });
+    console.log('✅ Connected to MongoDB');
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error);
-    process.exit(1);
+    console.error('❌ MongoDB connection error:', error);
+    throw error;
   }
 };
