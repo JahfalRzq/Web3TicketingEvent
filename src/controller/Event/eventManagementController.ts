@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../../data-source";
 import Joi, { required } from "joi";
-import { User,UserRole } from "../../model/User";
+import { User,UserRole } from "../../database/mysql/entities/User";
 import { encrypt,decrypt } from "../../utils/CryptoData";
 import multer from 'multer';  
 import path from 'path'; 
-import { Event,typeEvent,categoryEvent } from "../../model/Event";
+import { Event,typeEvent,categoryEvent } from "../../database/mysql/entities/Event";
 
 const { joiPasswordExtendCore } = require('joi-password')
 const joiPassword = Joi.extend(joiPasswordExtendCore)

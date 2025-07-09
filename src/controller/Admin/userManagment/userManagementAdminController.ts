@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../../../data-source";
 import Joi, { required } from "joi";
-import { User } from "../../../model/User";
+import { User } from "../../../database/mysql/entities/User";
 import { encrypt,decrypt } from "../../../utils/CryptoData";
 import multer from 'multer';  
 import path from 'path';  

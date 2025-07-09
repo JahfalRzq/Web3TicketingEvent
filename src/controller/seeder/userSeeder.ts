@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import { AppDataSource } from "../../data-source";
-import { User, UserRole } from "../../model/User";
+import { User, UserRole } from "../../database/mysql/entities/User";
 import { encrypt } from "../../utils/CryptoData";
 
 const { successResponse, errorResponse, validationResponse } = require('../../utils/response')

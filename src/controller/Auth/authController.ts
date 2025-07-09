@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../../model/User";
+import { User } from "../../database/mysql/entities/User";
 import { AppDataSource } from "../../data-source";
 import { JwtPayload } from "../../types/JwtPayload";
 import { createJwtToken } from "../../utils/createJwtToken";
