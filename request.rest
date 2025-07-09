@@ -1,8 +1,18 @@
 @token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZkOGM1YTM4LTJmOTAtNGYzMy1iN2M4LWViNDViMWQ3OTVlNiIsInVzZXJOYW1lIjoiQWRtaW4xIiwicGFzc3dvcmQiOiJmZjAwMGRkZmEwN2E5YmIxMjA2ODQ5NWMwZGRhOTdhMjpkMDVjZWY2OGJhZTNjMmE3ZDZmYTJmMjI2ZDQyNmI5OCIsImNyZWF0ZWRBdCI6IjIwMjUtMDEtMTdUMjM6MjQ6MTEuMjY5WiIsImlhdCI6MTczNzE1NjYyNCwiZXhwIjoxNzM5NzQ4NjI0fQ.iiAvCf4MKuVdVoYx_-QN5XrVWzCocSNWZ0N1t_Ewe5o
+
+
 ###
 GET http://localhost:5000/api/v1/seeder/userSeeder
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+
+
+###
+POST http://localhost:5000/api/v1/full-seeder/fullSeeder
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
 
 ###
 POST  http://localhost:5000/api/v1/auth/login
