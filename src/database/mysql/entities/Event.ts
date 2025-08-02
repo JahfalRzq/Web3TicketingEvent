@@ -92,12 +92,33 @@ export class Event{
     @IsString()
     public contract_address : string
 
+    @Column({
+    nullable : false
+    })
+    @IsString()
+    public location : string
+
         
     @Column({
         nullable : false
     })
     @IsString()
     public metadata_uri : string
+
+    
+    @Column({
+    nullable : false
+    })
+    @IsString()
+    public description : string
+
+        
+    @Column({
+    nullable : false
+    })
+    @IsString()
+    public image : string
+
 
 
 
