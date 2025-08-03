@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const NFTMetadataSchema = new mongoose.Schema(
   {
     eventId: {
-      type: Number,
+      type: String,
       required: true, // merujuk ke event_id di MySQL
     },
     name: {
