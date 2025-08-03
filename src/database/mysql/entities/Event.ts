@@ -9,19 +9,20 @@ export enum categoryEvent {
     KRIPTO = 'KRIPTO',
     DEFI = 'DEFI',
     NFT = 'NFT',
-    Web3 = 'Web3',
-    JobsHunter = 'JobsHunter',
-    AirdropHunter = 'AirdropHunter',
+    WEB3 = 'WEB3',
+    JOBHUNTER = 'JOBHUNTER',
+    AIRDROPHUNTER = 'AIRDROPHUNTER',
 }
 
 
 export enum typeEvent {
-    Nasional = 'Nasional',
-    Internasional = 'Internasional'
+    NASIONAL = 'NASIONAL',
+    INTERNASIONAL = 'INTERNASIONAL'
 }
 
 @Entity()
 export class Event{
+    
     @PrimaryGeneratedColumn('uuid')
     public id : string
 
