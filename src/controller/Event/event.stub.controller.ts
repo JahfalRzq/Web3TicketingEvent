@@ -127,3 +127,21 @@ export const createEventStub = async (req: Request, res: Response) => {
     return res.status(500).send(errorResponse("Internal server error", 500));
   }
 };
+
+export const getAllEvents = async (req: Request, res: Response) => {
+  try {
+    const events = await eventRepository.find({
+      relations: {
+        userOrganizer: true, // jika ingin menyertakan nama organizer
+      },
+      order: { startDate: "ASC" },
+    });
+
+    return res.status(200).send(
+      successResponse("List of events", events)
+    );
+  } catch (error: any) {
+    console.error("getAllEvents error:", error.message);
+    return res.status(500).send(errorResponse("Internal server error", 500));
+  }
+};
