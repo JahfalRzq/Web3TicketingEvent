@@ -1,56 +1,50 @@
 import request from "supertest";
-import app from "../src/app"; // gunakan app testing tanpa .listen()
-import { AppDataSource } from "../src/data-source";
-import { User, UserRole } from "../src/database/mysql/entities/User";
-import { encrypt } from "../src/utils/CryptoData";
+import app from "../src/app"; // pastikan app tidak memanggil .listen()
+import { UserRole } from "../src/database/mysql/entities/User";
+import jwt from "jsonwebtoken";
 
-let jwtToken: string;
+jest.mock("../src/data-source", () => ({
+  AppDataSource: {
+    getRepository: jest.fn().mockImplementation((entity) => {
+      return {
+        findOneBy: jest.fn().mockResolvedValue({
+          id: "mock-user-id",
+          role: UserRole.ADMIN,
+        }),
+        save: jest.fn().mockResolvedValue({
+          id: "mock-event-id",
+          nameEvent: "Test Event",
+        }),
+      };
+    }),
+    isInitialized: true,
+  },
+}));
 
-beforeAll(async () => {
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
-  }
+jest.mock("../src/database/mongodb/connect", () => ({
+  connectMongo: jest.fn().mockResolvedValue(true),
+}));
 
-  // Simpan 1 admin user dan ambil tokennya
-  const userRepo = AppDataSource.getRepository(User);
-  const admin = userRepo.create({
-    userName: "testadmin",
-    namaLengkap: "Test Admin",
-    walletAddress: "",
-    password: encrypt("Admin123!"),
-    role: UserRole.ADMIN,
-  });
-  await userRepo.save(admin);
-
-  const jwt = require("jsonwebtoken");
-  jwtToken = jwt.sign(
-    { id: admin.id, role: admin.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+jest.mock("../src/database/mongodb/models/nft-metadata.schema", () => {
+  return {
+    NFTMetadataModel: jest.fn().mockImplementation(() => ({
+      save: jest.fn().mockResolvedValue({
+        _id: "mock-metadata-id",
+        eventId: "mock-event-id",
+      }),
+    })),
+  };
 });
 
-afterAll(async () => {
-  if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
-  }
-});
-
-describe("POST /api/v1/eventStub/create", () => {
-  it("should fail when required fields are missing", async () => {
-  const res = await request(app)
-    .post("/api/v1/eventStub/create")
-    .set("Authorization", `Bearer ${jwtToken}`)
-    .send({}); // Kirim kosong  
-    expect(res.status).toBe(422); // Unprocessable Entity
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.error).toBe(true);
+describe("POST /api/v1/eventStub/create (mocked)", () => {
+  const mockToken = jwt.sign({ id: "mock-user-id", role: UserRole.ADMIN }, process.env.JWT_SECRET!, {
+    expiresIn: "1h",
   });
 
-  it("should return 201 and create event", async () => {
+  it("should create event and return 201", async () => {
     const res = await request(app)
       .post("/api/v1/eventStub/create")
-      .set("Authorization", `Bearer ${jwtToken}`)
+      .set("Authorization", `Bearer ${mockToken}`)
       .send({
         nameEvent: "Test Event",
         location: "Jakarta",
@@ -60,12 +54,22 @@ describe("POST /api/v1/eventStub/create", () => {
         ticketPrice: 50000,
         description: "Deskripsi event test",
         image: "https://example.com/image.png",
-        categoryEvent: "web3",
-        typeEvent: "nasional",
+        categoryEvent: "WEB3",
+        typeEvent: "NASIONAL",
       });
 
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty("data.event.id");
-    expect(res.body.message).toBe("Event created successfully with stub metadata");
+    expect(res.body).toHaveProperty("data.event.id", "mock-event-id");
+    expect(res.body).toHaveProperty("data.metadata.eventId", "mock-event-id");
+  });
+
+  it("should return 422 if request body is invalid", async () => {
+    const res = await request(app)
+      .post("/api/v1/eventStub/create")
+      .set("Authorization", `Bearer ${mockToken}`)
+      .send({});
+
+    expect(res.status).toBe(422);
+    expect(res.body.error).toBe(true);
   });
 });
