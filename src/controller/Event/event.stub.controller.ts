@@ -149,7 +149,7 @@ export const getAllEventsStub = async (req: Request, res: Response) => {
   }
 };
 
-export const getEventById = async (req: Request, res: Response) => {
+export const getEventByIdStub = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
