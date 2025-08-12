@@ -11,6 +11,10 @@ const userRepository = AppDataSource.getRepository(User);
 
 const { successResponse, errorResponse, validationResponse } = require("../../utils/response");
 
+
+
+
+
 export const createEventStub = async (req: Request, res: Response) => {
   // 📌 Step 1: Validasi schema input
   const createEventSchema = (input) =>
@@ -128,20 +132,43 @@ export const createEventStub = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllEvents = async (req: Request, res: Response) => {
+export const getAllEventsStub = async (req: Request, res: Response) => {
   try {
-    const events = await eventRepository.find({
+    const eventData = await eventRepository.find({
       relations: {
         userOrganizer: true, // jika ingin menyertakan nama organizer
       },
       order: { startDate: "ASC" },
     });
 
-    return res.status(200).send(
-      successResponse("List of events", events)
-    );
+    return res.status(200).send(successResponse("List of events", eventData, 200));
+
   } catch (error: any) {
     console.error("getAllEvents error:", error.message);
+    return res.status(500).send(errorResponse("Internal server error", 500));
+  }
+};
+
+export const getEventById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).send(errorResponse("Event ID is required", 400));
+    }
+
+    const event = await eventRepository.findOne({
+      where: { id },
+      relations: ["userOrganizer"], // join user
+    });
+
+    if (!event) {
+      return res.status(404).send(errorResponse("Event not found", 404));
+    }
+
+    return res.status(200).send(successResponse("Event detail", { event }, 200));
+  } catch (error: any) {
+    console.error("getEventById error:", error.message);
     return res.status(500).send(errorResponse("Internal server error", 500));
   }
 };
