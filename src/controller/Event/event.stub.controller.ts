@@ -198,3 +198,27 @@ export const updateEventStub = async (req: Request, res: Response) => {
     return res.status(500).send(errorResponse("Internal server error", 500));
   }
 };
+
+export const softDeleteEventStub = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).send(errorResponse("Event ID is required", 400));
+    }
+
+    const existingEvent = await eventRepository.findOneBy({ id });
+    if (!existingEvent) {
+      return res.status(404).send(errorResponse("Event not found", 404));
+    }
+
+    existingEvent.deletedAt = new Date();
+
+    await eventRepository.save(existingEvent);
+
+    return res.status(200).send(successResponse("Event soft deleted successfully", null, 200));
+  } catch (error: any) {
+    console.error("softDeleteEventStub error:", error.message);
+    return res.status(500).send(errorResponse("Internal server error", 500));
+  }
+};
