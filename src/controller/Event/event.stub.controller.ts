@@ -172,3 +172,29 @@ export const getEventByIdStub = async (req: Request, res: Response) => {
     return res.status(500).send(errorResponse("Internal server error", 500));
   }
 };
+
+export const updateEventStub = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).send(errorResponse("Event ID is required", 400));
+    }
+
+    const existingEvent = await eventRepository.findOneBy({ id });
+    if (!existingEvent) {
+      return res.status(404).send(errorResponse("Event not found", 404));
+    }
+
+    // Update hanya field yang diisi
+    Object.assign(existingEvent, req.body);
+    existingEvent.updatedAt = new Date();
+
+    const updatedEvent = await eventRepository.save(existingEvent);
+
+    return res.status(200).send(successResponse("Event updated successfully", updatedEvent, 200));
+  } catch (error: any) {
+    console.error("updateEventStub error:", error.message);
+    return res.status(500).send(errorResponse("Internal server error", 500));
+  }
+};
