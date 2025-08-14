@@ -73,6 +73,17 @@ export const getEventByIdStub = async (req: Request, res: Response) => {
  * Create Event (ADMIN only)
  */
 export const createEventStub = async (req: Request, res: Response) => {
+  const createEventSchema = Joi.object({
+  nameEvent: Joi.string().required(),
+  location: Joi.string().required(),
+  startDate: Joi.date().required(),
+  endDate: Joi.date().required(),
+  totalTicket: Joi.number().integer().min(1).required(),
+  ticketPrice: Joi.number().integer().min(0).required(),
+  description: Joi.string().allow(""),
+  image: Joi.string().uri().allow(""),
+});
+
   try {
     const userAccess = await checkAdminAccess(req, res);
     if (!userAccess) return;
@@ -113,6 +124,17 @@ export const createEventStub = async (req: Request, res: Response) => {
  * Update Event (ADMIN only)
  */
 export const updateEventStub = async (req: Request, res: Response) => {
+  const updateEventSchema = Joi.object({
+  nameEvent: Joi.string().required(),
+  location: Joi.string().required(),
+  startDate: Joi.date().required(),
+  endDate: Joi.date().required(),
+  totalTicket: Joi.number().integer().min(1).required(),
+  ticketPrice: Joi.number().integer().min(0).required(),
+  description: Joi.string().allow(""),
+  image: Joi.string().uri().allow(""),
+});
+
   try {
     const userAccess = await checkAdminAccess(req, res);
     if (!userAccess) return;
