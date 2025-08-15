@@ -85,7 +85,6 @@ export const getAllEventsStub = async (req: Request, res: Response) => {
     return res.status(500).send(errorResponse("Internal server error", 500));
   }
 };
-
 /**
  * Get Event By ID
  */
