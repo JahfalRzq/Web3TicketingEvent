@@ -31,17 +31,55 @@ const checkAdminAccess = async (req: Request, res: Response) => {
  */
 export const getAllEventsStub = async (req: Request, res: Response) => {
   try {
-    const events = await eventRepository.find();
-    const eventIds = events.map(e => e.id);
+    // Pagination
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
-    const metadataList = await NFTMetadataModel.find({ eventId: { $in: eventIds } });
+    // Sorting
+    const sortBy = (req.query.sortBy as string) || "createdAt"; // default kolom
+    const sortOrder =
+      (req.query.sortOrder as string)?.toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-    const mergedData = events.map(event => {
-      const metadata = metadataList.find(m => m.eventId === event.id);
+    // Ambil total count untuk pagination
+    const total = await eventRepository.count();
+
+    // Ambil data dari MySQL dengan pagination & sorting
+    const events = await eventRepository.find({
+      skip,
+      take: limit,
+      order: {
+        [sortBy]: sortOrder,
+      },
+    });
+
+    // Ambil ID semua event untuk query Mongo
+    const eventIds = events.map((e) => e.id);
+
+    // Ambil metadata dari Mongo berdasarkan eventId
+    const metadataList = await NFTMetadataModel.find({
+      eventId: { $in: eventIds },
+    });
+
+    // Merge MySQL + Mongo
+    const mergedData = events.map((event) => {
+      const metadata = metadataList.find((m) => m.eventId === event.id);
       return { ...event, metadata };
     });
 
-    return res.status(200).send(successResponse("List of events", mergedData, 200));
+    return res.status(200).send(
+      successResponse(
+        "List of events",
+        {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          data: mergedData,
+        },
+        200
+      )
+    );
   } catch (error: any) {
     console.error("getAllEvents error:", error.message);
     return res.status(500).send(errorResponse("Internal server error", 500));
