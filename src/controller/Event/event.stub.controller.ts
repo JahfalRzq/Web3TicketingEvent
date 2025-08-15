@@ -73,17 +73,22 @@ export const getEventByIdStub = async (req: Request, res: Response) => {
  * Create Event (ADMIN only)
  */
 export const createEventStub = async (req: Request, res: Response) => {
-  const createEventSchema = Joi.object({
-  nameEvent: Joi.string().required(),
+const createEventSchema = Joi.object({
+  nameEvent: Joi.string().required().messages({
+    "any.required": "Event name is required",
+    "string.empty": "Event name cannot be empty",
+  }),
   location: Joi.string().required(),
+  alamatEvent: Joi.string().required(),
   startDate: Joi.date().required(),
   endDate: Joi.date().required(),
   totalTicket: Joi.number().integer().min(1).required(),
   ticketPrice: Joi.number().integer().min(0).required(),
   description: Joi.string().allow(""),
   image: Joi.string().uri().allow(""),
+  typeEvent: Joi.string().valid("NASIONAL", "INTERNASIONAL").required(),
+  categoryEvent: Joi.string().required(),
 });
-
   try {
     const userAccess = await checkAdminAccess(req, res);
     if (!userAccess) return;
@@ -125,15 +130,19 @@ export const createEventStub = async (req: Request, res: Response) => {
  */
 export const updateEventStub = async (req: Request, res: Response) => {
   const updateEventSchema = Joi.object({
-  nameEvent: Joi.string().required(),
-  location: Joi.string().required(),
-  startDate: Joi.date().required(),
-  endDate: Joi.date().required(),
-  totalTicket: Joi.number().integer().min(1).required(),
-  ticketPrice: Joi.number().integer().min(0).required(),
-  description: Joi.string().allow(""),
-  image: Joi.string().uri().allow(""),
+  nameEvent: Joi.string().optional(),
+  location: Joi.string().optional(),
+  alamatEvent: Joi.string().optional(),
+  startDate: Joi.date().optional(),
+  endDate: Joi.date().optional(),
+  totalTicket: Joi.number().integer().min(1).optional(),
+  ticketPrice: Joi.number().integer().min(0).optional(),
+  description: Joi.string().allow("").optional(),
+  image: Joi.string().uri().allow("").optional(),
+  typeEvent: Joi.string().valid("NASIONAL", "INTERNASIONAL").optional(),
+  categoryEvent: Joi.string().optional(),
 });
+
 
   try {
     const userAccess = await checkAdminAccess(req, res);
