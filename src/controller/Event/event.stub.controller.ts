@@ -5,6 +5,10 @@ import { NFTMetadataModel } from "../../database/mongodb/models/nft-metadata.sch
 import Joi from "joi";
 import { User } from "../../database/mysql/entities/User";
 import { UserRole } from "../../database/mysql/entities/User";
+import { buildQueryOptions } from "../../utils/queryHelper";
+import { ILike } from "typeorm";
+
+
 
 const { successResponse, errorResponse, validationResponse } = require('../../../utils/response')
 const eventRepository = AppDataSource.getRepository(Event);
@@ -31,37 +35,33 @@ const checkAdminAccess = async (req: Request, res: Response) => {
  */
 export const getAllEventsStub = async (req: Request, res: Response) => {
   try {
-    // Pagination
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (page - 1) * limit;
+    const { page, limit, skip, sortBy, sortOrder, search } = buildQueryOptions(req);
 
-    // Sorting
-    const sortBy = (req.query.sortBy as string) || "createdAt"; // default kolom
-    const sortOrder =
-      (req.query.sortOrder as string)?.toUpperCase() === "ASC" ? "ASC" : "DESC";
+    // Hitung total data di MySQL
+    const total = await eventRepository.count({
+      where: search ? { nameEvent: ILike(`%${search}%`) } : {},
+    });
 
-    // Ambil total count untuk pagination
-    const total = await eventRepository.count();
-
-    // Ambil data dari MySQL dengan pagination & sorting
+    // Ambil data dari MySQL
     const events = await eventRepository.find({
+      where: search ? { nameEvent: ILike(`%${search}%`) } : {},
       skip,
       take: limit,
-      order: {
-        [sortBy]: sortOrder,
-      },
+      order: { [sortBy]: sortOrder },
     });
 
-    // Ambil ID semua event untuk query Mongo
+    // Ambil metadata Mongo
     const eventIds = events.map((e) => e.id);
+    let metadataList = await NFTMetadataModel.find({ eventId: { $in: eventIds } });
 
-    // Ambil metadata dari Mongo berdasarkan eventId
-    const metadataList = await NFTMetadataModel.find({
-      eventId: { $in: eventIds },
-    });
+    // Jika search berlaku ke metadata juga
+if (search) {
+  metadataList = metadataList.filter((m) =>
+    m.metadataURI?.toLowerCase().includes(search.toLowerCase())
+  );
+}
 
-    // Merge MySQL + Mongo
+    // Merge
     const mergedData = events.map((event) => {
       const metadata = metadataList.find((m) => m.eventId === event.id);
       return { ...event, metadata };
